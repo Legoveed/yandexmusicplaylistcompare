@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Сравните два плейлиста</h2>
+    <form id="playlistForm" class="playlist-form">
+        <div class="form-group">
+            <label for="playlist1">Ссылка на первый плейлист:</label>
+            <input type="url" id="playlist1" name="playlist1" placeholder="https://music.yandex.ru/users/username/playlists/1234 или https://music.yandex.ru/playlists/uuid-пример" required>
+        </div>
+        <div class="form-group">
+            <label for="playlist2">Ссылка на второй плейлист:</label>
+            <input type="url" id="playlist2" name="playlist2" placeholder="https://music.yandex.ru/users/username/playlists/1234 или https://music.yandex.ru/playlists/uuid-пример" required>
+        </div>
+        <button type="submit" class="btn" id="submitBtn">Найти общие треки</button>
+    </form>
+</div>
+
+<div id="loading" class="loading-container" style="display: none;">
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+    <p id="progressMessage">Обрабатываем плейлисты, это может занять некоторое время...</p>
+</div>
+
+<div id="resultsContainer">
+    <!-- Результаты будут подгружаться через AJAX -->
+</div>
+
+<script>
+document.getElementById('playlistForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const url1 = formData.get('playlist1');
+    const url2 = formData.get('playlist2');
+    
+    // Показать индикатор загрузки
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('submitBtn').disabled = true;
+    
+    // Сброс прогрессбара
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressText').textContent = '0%';
+    document.getElementById('progressMessage').textContent = 'Обрабатываем плейлисты, это может занять некоторое время...';
+    
+    // Функция для обновления прогресса
+    function updateProgress(percent, message) {
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressText').textContent = percent + '%';
+        if (message) {
+            document.getElementById('progressMessage').textContent = message;
+        }
+    }
+    
+    // Симуляция прогресса (в реальном приложении нужно использовать WebSockets)
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        if (progress < 90) {
+            progress += 5;
+            updateProgress(progress, "Обрабатываем плейлисты...");
+        }
+    }, 1000);
+    
+    // Отправить AJAX запрос
+    fetch('/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            playlist1: url1,
+            playlist2: url2
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        updateProgress(100, "Готово!");
+        
+        // Небольшая задержка для отображения 100%
+        setTimeout(() => {
+            // Скрыть индикатор загрузки
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('submitBtn').disabled = false;
+            
+            if (data.error) {
+                // Показать ошибку
+                document.getElementById('resultsContainer').innerHTML = `
+                    <div class="error-message">
+                        <h3>Ошибка:</h3>
+                        <p>${data.error}</p>
+                    </div>
+                `;
+            } else {
+                // Показать результаты
+                let resultsHTML = '';
+                if (data.common_tracks && data.common_tracks.length > 0) {
+                    resultsHTML = `
+                        <div class="results-container">
+                            <h2>Найдено общих треков: ${data.common_tracks.length}</h2>
+                            <div class="tracks-list">
+                                ${data.common_tracks.map(track => `
+                                    <div class="track-item">
+                                        <a href="${track.url}" target="_blank" class="track-link">
+                                            <span class="track-title">${track.title}</span>
+                                            <span class="track-artists">— ${track.artists}</span>
+                                        </a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultsHTML = '<p class="no-results">Общих треков не найдено.</p>';
+                }
+                document.getElementById('resultsContainer').innerHTML = resultsHTML;
+            }
+        }, 500);
+    })
+    .catch(error => {
+        clearInterval(progressInterval);
+        console.error('Error:', error);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('resultsContainer').style.display = 'block';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('resultsContainer').innerHTML = `
+            <div class="error-message">
+                <h3>Ошибка:</h3>
+                <p>Произошла ошибка при обработке запроса</p>
+            </div>
+        `;
+    });
+});
+</script>
+{% endblock %}

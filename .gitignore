@@ -1,0 +1,15 @@
+# Файлы с environment variables
+.env
+*.env
+
+# Виртуальное окружение Python
+venv/
+env/
+
+# Файлы IDE
+.vscode/
+.idea/
+
+# Кэш Python
+__pycache__/
+*.pyc
