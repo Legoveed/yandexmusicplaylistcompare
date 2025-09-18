@@ -77,9 +77,13 @@ class YandexMusicService:
                 "User-Agent": "Yandex-Music-API",
                 "Accept": "application/json"
             }
+            proxies = {
+                "http": "http://37.200.67.75:1080",  # Example free Russian proxy (may not work)
+                "https": "http://37.200.67.75:1080",
+            }
 
             # Выполнение запроса
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, timeout=10, proxies = proxies)
 
             # Обработка ответа
             if response.status_code == 200:
