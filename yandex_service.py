@@ -78,7 +78,7 @@ class YandexMusicService:
                 "Accept": "application/json"
             }
             proxies = {
-                "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306",
+                "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64307",
                 "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64307"
             }
 
