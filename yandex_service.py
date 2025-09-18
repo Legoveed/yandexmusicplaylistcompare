@@ -78,8 +78,8 @@ class YandexMusicService:
                 "Accept": "application/json"
             }
             proxies = {
-                "http": "http://176.103.85.227:64306",  # Example free Russian proxy (may not work)
-                "https": "https://176.103.85.227:64307",
+                "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306",
+                "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306"
             }
 
             # Выполнение запроса
