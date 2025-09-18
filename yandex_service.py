@@ -79,7 +79,7 @@ class YandexMusicService:
             }
             proxies = {
                 "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306",
-                "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306"
+                "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64307"
             }
 
             # Выполнение запроса
