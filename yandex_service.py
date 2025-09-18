@@ -78,12 +78,12 @@ class YandexMusicService:
                 "Accept": "application/json"
             }
             proxies = {
-                "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64307",
-                "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64307"
+                "http": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306",
+                "https": "http://1dbgKB2B:UDLYvDZb@176.103.85.227:64306"
             }
 
             # Выполнение запроса
-            response = requests.get(url, headers=headers, timeout=10, proxies = proxies)
+            response = requests.get(url, headers=headers, timeout=10, proxies = proxies, verify=False)
 
             # Обработка ответа
             if response.status_code == 200:
